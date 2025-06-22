@@ -1,31 +1,36 @@
 import os
-from langchain.document_loaders import PyPDFLoader
+from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.embeddings import HuggingFaceEmbeddings
-from langchain.vectorstores import Chroma
-from langchain.chains import RetrievalQA
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_chroma import Chroma
 
-pdf_directory = "C:/Users/arjun/OneDrive/Documents/digi-vakeel/laws"
-all_pdf = []
+pdf_directory = "C:/Users/arjun/OneDrive/Documents/digi-vakeel/datasets/rag_pdf"
+vector_store_directory = "C:/Users/arjun/OneDrive/Documents/digi-vakeel/vector_store"
+embeddings_model = HuggingFaceEmbeddings(model_name="BAAI/bge-base-en-v1.5")
 
-for filename in os.listdir(pdf_directory):
-    loader = PyPDFLoader(os.path.join(pdf_directory, filename))
-    documents = loader.load()
-    all_pdf.extend(documents)
+def create_or_get_vector_store():
+    if os.path.exists(pdf_directory) and os.listdir(vector_store_directory):
+        vector_store = Chroma(persist_directory=vector_store_directory, embedding_function=embeddings_model)
+    else:
+        all_pdf = []
+        for filename in os.listdir(pdf_directory):
+          loader = PyPDFLoader(os.path.join(pdf_directory, filename))
+          documents = loader.load()
+          all_pdf.extend(documents)
 
-#Split the documents into chunks
-splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
-split_documents = splitter.split_documents(all_pdf)
+        #Split the documents into chunks
+        splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+        split_documents = splitter.split_documents(all_pdf)
 
-#Embeddings
-embeddings = HuggingFaceEmbeddings(model_name="BAAI/bge-base-en-v1.5")
+        #Embeddings
+        embeddings = embeddings_model
 
-#Vector Store
-vector_store = Chroma.from_documents(
-    split_documents, 
-    embeddings, 
-    persist_directory="C:/Users/arjun/OneDrive/Documents/digi-vakeel/vector_store"
-)
-vector_store.persist()
+        #Vector Store
+        vector_store = Chroma.from_documents(
+          split_documents, 
+          embeddings, 
+          persist_directory=vector_store_directory
+        )
+    return vector_store
 
-retriever = vector_store.as_retriever(search_kwargs={"k": 5})
+vector_store = create_or_get_vector_store()
