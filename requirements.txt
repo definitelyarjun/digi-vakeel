@@ -2,6 +2,7 @@
 # Core LangChain Framework & Integrations
 # ----------------------------------------
 langchain
+langchain-community
 langchain-core
 langchain-ollama
 langchain-huggingface

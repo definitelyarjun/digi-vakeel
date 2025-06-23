@@ -26,7 +26,7 @@ client = SarvamAI(api_subscription_key=api_key)
 qa_chain = RetrievalQA.from_chain_type(
    llm=base_llm,
    chain_type="stuff",
-   retriever= rag.vector_store.as_retriever(search_kwargs={"k": 3}),
+   retriever= rag.vector_store.as_retriever(search_type="mmr",search_kwargs={"k": 3, "lambda_mult": 0.5, "fetch_k": 10}),
    return_source_documents=True,
 )
 
