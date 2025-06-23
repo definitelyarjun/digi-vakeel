@@ -1,16 +1,15 @@
 # ----------------------------------------
-# Core LangChain Framework
+# Core LangChain Framework & Integrations
 # ----------------------------------------
 langchain
 langchain-core
-langchain-community
 langchain-ollama
 langchain-huggingface
 langchain-chroma
 
 # ----------------------------------------
-# Vision Model & NLP
-# (For the Hugging Face OCR pipeline)
+# Vision Model & NLP Backend
+# (For Hugging Face OCR and embeddings)
 # ----------------------------------------
 transformers
 torch
@@ -21,8 +20,15 @@ huggingface-hub
 # ----------------------------------------
 # Document Handling & Vector Store
 # ----------------------------------------
-pypdf      # For loading PDF documents
+pypdf      # For loading PDF documents in rag_implementation.py
 chromadb   # The underlying database for langchain-chroma
+
+# ----------------------------------------
+# External APIs & Utilities
+# ----------------------------------------
+sarvamai           # For the translation API
+langdetect         # For the simple "is it English?" check
+python-dotenv      # For loading your .env file with API keys
 
 # ----------------------------------------
 # Web Interface
