@@ -1,0 +1,30 @@
+# ----------------------------------------
+# Core LangChain Framework
+# ----------------------------------------
+langchain
+langchain-core
+langchain-community
+langchain-ollama
+langchain-huggingface
+langchain-chroma
+
+# ----------------------------------------
+# Vision Model & NLP
+# (For the Hugging Face OCR pipeline)
+# ----------------------------------------
+transformers
+torch
+Pillow
+sentence-transformers
+huggingface-hub
+
+# ----------------------------------------
+# Document Handling & Vector Store
+# ----------------------------------------
+pypdf      # For loading PDF documents
+chromadb   # The underlying database for langchain-chroma
+
+# ----------------------------------------
+# Web Interface
+# ----------------------------------------
+gradio
