@@ -8,9 +8,6 @@ from twilio.rest import Client
 from main import full_chain
 from dotenv import load_dotenv
 
-
-conversation_history = {}
-
 load_dotenv()
 app = FastAPI()
 
@@ -26,25 +23,17 @@ async def webhook(From: str = Form(...), Body: Optional[str] = Form(None), NumMe
     input_dict = {}
     query = Body or ""
     
-    # Get or initialize conversation history for this user
-    history = conversation_history.get(From, [])
-    history.append({"role": "user", "content": query})
-    
     #Image
     if NumMedia > 0 and MediaUrl0:
         response = requests.get(MediaUrl0)
         image = Image.open(BytesIO(response.content))
-        input_dict = {"query": query, "image_object": image, "history": history}
+        input_dict = {"query": query, "image_object": image}
     else:
-        input_dict = {"query": query, "history": history}
+        input_dict = {"query": query}
 
     result = full_chain.invoke(input_dict)
     answer = result.get("result", "Sorry, I could not process your request.")
 
-    # Add assistant response to history
-    history.append({"role": "assistant", "content": answer})
-    conversation_history[From] = history
-    
     twilio_client.messages.create(
         from_=TWILIO_SANDBOX_NUMBER,
         body=answer,
