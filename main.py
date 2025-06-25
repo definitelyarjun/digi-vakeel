@@ -48,35 +48,35 @@ qa_chain = RetrievalQA.from_chain_type(
 
 #     return formatted_query
 
-""" TESTING GPT CODE"""
-def build_prompt(query, history=None, image_transcription=None):
-    prompt = ""
-    if history:
-        for turn in history:
-            if turn["role"] == "user":
-                prompt += f"User: {turn['content']}\n"
-            elif turn["role"] == "assistant":
-                prompt += f"Assistant: {turn['content']}\n"
-    if image_transcription:
-        prompt += f"[IMAGE_TRANSCRIPTION]:\n{image_transcription}\n"
-    prompt += f"[USER_QUERY]:\n{query}"
-    return prompt
+# """ TESTING GPT CODE"""
+# def build_prompt(query, history=None, image_transcription=None):
+#     prompt = ""
+#     if history:
+#         for turn in history:
+#             if turn["role"] == "user":
+#                 prompt += f"User: {turn['content']}\n"
+#             elif turn["role"] == "assistant":
+#                 prompt += f"Assistant: {turn['content']}\n"
+#     if image_transcription:
+#         prompt += f"[IMAGE_TRANSCRIPTION]:\n{image_transcription}\n"
+#     prompt += f"[USER_QUERY]:\n{query}"
+#     return prompt
 
-def process_image(input_dict: dict) -> str:
-    image_object = input_dict.get("image_object")
-    query = input_dict.get("query")
-    history = input_dict.get("history", [])
+# def process_image(input_dict: dict) -> str:
+#     image_object = input_dict.get("image_object")
+#     query = input_dict.get("query")
+#     history = input_dict.get("history", [])
 
-    if not isinstance(image_object, Image.Image):
-        return build_prompt(query, history=history)
+#     if not isinstance(image_object, Image.Image):
+#         return build_prompt(query, history=history)
 
-    transcribed_text = ocr_model(image_object)[0]['generated_text']
-    return build_prompt(query, history=history, image_transcription=transcribed_text)
+#     transcribed_text = ocr_model(image_object)[0]['generated_text']
+#     return build_prompt(query, history=history, image_transcription=transcribed_text)
 
-def process_text(input_dict: dict) -> str:
-    query = input_dict.get("query")
-    history = input_dict.get("history", [])
-    return build_prompt(query, history=history)
+# def process_text(input_dict: dict) -> str:
+#     query = input_dict.get("query")
+#     history = input_dict.get("history", [])
+#     return build_prompt(query, history=history)
 
 #Language checki
 def is_english(query: str) -> bool:
