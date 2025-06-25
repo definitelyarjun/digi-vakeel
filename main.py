@@ -15,7 +15,7 @@ api_key = os.getenv("SARVAM_API_KEY")
 
 #Models
 base_llm = ChatOllama(
-    model="digi-vakeel",
+    model="gemma3:1b",
     temperature=0
 )
 
@@ -31,24 +31,54 @@ qa_chain = RetrievalQA.from_chain_type(
 )
 
 #Image Handling
+# def process_image(input_dict: dict) -> str:
+#     image_object = input_dict.get("image_object")
+#     query = input_dict.get("query")
+
+#     if not isinstance(image_object, Image.Image):
+#         return query
+
+#     transcribed_text = ocr_model(image_object)[0]['generated_text']
+
+#     formatted_query = f"""[IMAGE_TRANSCRIPTION]:
+#     {transcribed_text}
+
+#     [USER_QUERY]:
+#     {query}"""
+
+#     return formatted_query
+
+""" TESTING GPT CODE"""
+def build_prompt(query, history=None, image_transcription=None):
+    prompt = ""
+    if history:
+        for turn in history:
+            if turn["role"] == "user":
+                prompt += f"User: {turn['content']}\n"
+            elif turn["role"] == "assistant":
+                prompt += f"Assistant: {turn['content']}\n"
+    if image_transcription:
+        prompt += f"[IMAGE_TRANSCRIPTION]:\n{image_transcription}\n"
+    prompt += f"[USER_QUERY]:\n{query}"
+    return prompt
+
 def process_image(input_dict: dict) -> str:
     image_object = input_dict.get("image_object")
     query = input_dict.get("query")
+    history = input_dict.get("history", [])
 
     if not isinstance(image_object, Image.Image):
-        return query
+        return build_prompt(query, history=history)
 
     transcribed_text = ocr_model(image_object)[0]['generated_text']
+    return build_prompt(query, history=history, image_transcription=transcribed_text)
 
-    formatted_query = f"""[IMAGE_TRANSCRIPTION]:
-    {transcribed_text}
+def process_text(input_dict: dict) -> str:
+    query = input_dict.get("query")
+    history = input_dict.get("history", [])
+    return build_prompt(query, history=history)
 
-    [USER_QUERY]:
-    {query}"""
-
-    return formatted_query
-
-#Language check
+#Language checki
 def is_english(query: str) -> bool:
     if langdetect.detect(query) == 'en':
         return True
@@ -92,7 +122,9 @@ base_malayalam_chain = (
     | RunnableLambda(translate_to_ml)
     | (lambda text: {"result": text})
 )
-base_chain = itemgetter("query") | qa_chain
+# base_chain = itemgetter("query") | qa_chain
+
+base_chain = RunnableLambda(process_text) | qa_chain
 
 #Branch
 full_chain = RunnableBranch(
@@ -111,4 +143,33 @@ full_chain = RunnableBranch(
     ),
     base_chain #English
 )
-      
+
+if __name__ == "__main__":
+    history = []
+
+    # Simulate a conversation
+    user_inputs = [
+        "hi my name is john",
+        "what is my name",
+        "Is there any exception to this penalty?"
+    ]
+
+    for user_query in user_inputs:
+        # Add user message to history
+        history.append({"role": "user", "content": user_query})
+
+        # Prepare input dict with current history
+        input_dict = {
+            "query": user_query,
+            "history": history.copy()  # Pass a copy to avoid mutation issues
+        }
+
+        # Get assistant response
+        result = full_chain.invoke(input_dict)
+        answer = result.get("result", "Sorry, I could not process your request.")
+
+        # Add assistant response to history
+        history.append({"role": "assistant", "content": answer})
+
+        print(f"User: {user_query}")
+        print(f"Assistant: {answer}\n")  
