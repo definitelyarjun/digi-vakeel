@@ -8,6 +8,7 @@ from PIL import Image
 import langdetect
 from sarvamai import SarvamAI
 from dotenv import load_dotenv
+from google.cloud import translate
 import os
 
 load_dotenv()

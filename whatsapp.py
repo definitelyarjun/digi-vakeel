@@ -19,10 +19,10 @@ TWILIO_SANDBOX_NUMBER = os.getenv("TWILIO_SANDBOX_NUMBER")
 twilio_client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
 
 @app.post("/webhook")
-async def webhook(From: str = Form(...), Body: Optional[str] = Form(None), NumMedia: int = Form(0), MediaUrl0: Optional[str] = Form(None)):
+async def webhook(From:str = Form(...), Body: Optional[str] = Form(None), NumMedia: int = Form(0), MediaUrl0: Optional[str] = Form(None)):
     input_dict = {}
     query = Body or ""
-    
+
     #Image
     if NumMedia > 0 and MediaUrl0:
         response = requests.get(MediaUrl0)
@@ -39,5 +39,5 @@ async def webhook(From: str = Form(...), Body: Optional[str] = Form(None), NumMe
         body=answer,
         to=From
     )
-    
+
     return Response(status_code=204)
