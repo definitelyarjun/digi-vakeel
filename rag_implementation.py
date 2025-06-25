@@ -38,7 +38,7 @@ def create_or_get_vector_store():
 """
 vector_store = create_or_get_vector_store()
 
-query = "what is section 107 of consumer protection laws 2019"
-results_mmr = vector_store.max_marginal_relevance_search(query, k=3, fetch_k=10, lambda_mult=0.5)
-for i, doc in enumerate(results_mmr):
-  print(f"Result {i+1}:\n{doc.page_content}\n")
+# query = "what is section 107 of consumer protection laws 2019"
+# results_mmr = vector_store.max_marginal_relevance_search(query, k=3, fetch_k=10, lambda_mult=0.5)
+# for i, doc in enumerate(results_mmr):
+#   print(f"Result {i+1}:\n{doc.page_content}\n")
