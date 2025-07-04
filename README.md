@@ -109,6 +109,6 @@ Open the local URL provided in the terminal (http://127.0.0.1:7860) in your web 
 The core LLM, digi-vakeel, was fine-tuned specifically for this project. The process is detailed in the model_finetuning.ipynb notebook.
 
 
-Base Model: unsloth/Meta-Llama-3.1-8B
+Base Model: unsloth/Meta-Llama-3.1 (8B)
 Technique: QLoRA using the Unsloth library for memory-efficient fine-tuning.
 Dataset: definitelyarjun/In-Legal, a custom dataset of Indian legal instructions and responses.
